@@ -509,6 +509,26 @@
       <div class="prompt-title">Clean raw text</div>
       <div class="prompt-where">Gemini</div>
     </div>
+    <div class="prompt-card" onclick="openPrompt('Prompt generator', 'Claude', `I am going to give you a rough idea of what I want to do. It might be messy, incomplete or just a few sentences. Your job is to turn it into a perfect ready-to-use prompt I can paste directly into any AI tool.\n\nWhen building the prompt make sure it includes a clear role for the AI, specific context about my situation, a precise task with clear deliverables, any constraints or things to avoid, and the format I want the output in.\n\nMy rough idea is: [WRITE YOUR IDEA HERE IN PLAIN LANGUAGE]\n\nAfter generating the prompt show it in a copyable block and tell me in one sentence what makes it better than my original idea.`)">
+      <span class="prompt-arrow">↗</span>
+      <div class="prompt-title">Prompt generator</div>
+      <div class="prompt-where">Claude</div>
+    </div>
+    <div class="prompt-card" onclick="openPrompt('Email assistant', 'Claude', `You are my personal email assistant. I write emails that are direct, honest and polite but never stiff or corporate. I get to the point immediately, occasionally add a short personal explanation to soften a request, and sign off simply with my name. I never use filler phrases like "I hope this email finds you well" or "please do not hesitate to contact me."\n\nWrite me an email based on this situation: [DESCRIBE WHAT THE EMAIL IS ABOUT AND WHO IT IS TO]\n\nRules:\n- Match my natural tone — casual-professional, warm but efficient\n- Keep it short unless the situation genuinely requires length\n- Never use corporate filler or formal stiffness\n- Sign off with just "Haavard" unless I specify otherwise\n- If there are multiple approaches give me two versions — one direct, one slightly softer`)">
+      <span class="prompt-arrow">↗</span>
+      <div class="prompt-title">Email assistant</div>
+      <div class="prompt-where">Claude</div>
+    </div>
+    <div class="prompt-card" onclick="openPrompt('Research to essay', 'Claude', `I have a new assignment. Walk me through it step by step — do not move to the next step until I confirm I am ready.\n\nStep 1 — Analyse the brief\nRead my assignment instructions below and tell me: what is the teacher most likely looking for, what are the key things I must cover, and what angle could I take to stand out.\n\nStep 2 — Research guide\nBased on the brief give me 4-5 specific search queries I should put into Perplexity to find the best sources. Tell me what kind of sources to prioritise.\n\nStep 3 — Outline\nOnce I have done my research and paste my notes, build me a full paragraph-by-paragraph essay outline with a clear argument running through it.\n\nStep 4 — Draft review\nOnce I paste my draft, tell me what is strong, what is weak, and what needs fixing before I run it through my rewriter.\n\nMy assignment instructions are: [PASTE BRIEF HERE]`)">
+      <span class="prompt-arrow">↗</span>
+      <div class="prompt-title">Research to essay</div>
+      <div class="prompt-where">Claude</div>
+    </div>
+    <div class="prompt-card" onclick="openPrompt('Grade my essay', 'Claude', `You are a strict but fair university professor grading my essay on a scale of 1 to 6, where 6 is the highest. You can use decimals and ranges such as 5,6 to reflect borderline grades.\n\nRead the essay carefully and evaluate it across these five categories:\n\n1. Assignment answer — How well does the essay actually answer what was asked? Does it stay on topic and fully address the brief?\n\n2. Creativity and originality — How creative, original and unique are my thoughts, ideas and perspective? Does it stand out or does it feel generic?\n\n3. Grammar, tone and flow — How natural and well-written is the language? Does it read smoothly from start to finish?\n\n4. Weak vs strong points — What are the strongest parts of the essay and what is missing or underdeveloped? Be specific and quote examples.\n\n5. Overall grade — A final 1-6 score with a one sentence verdict.\n\nRules:\n- Be honest and strict — do not soften feedback to be nice\n- For each category give a 1-6 score plus a short explanation\n- End with the single most important thing I should fix before submitting\n- Do not rewrite anything for me\n\nHere is my essay: [PASTE ESSAY HERE]`)">
+      <span class="prompt-arrow">↗</span>
+      <div class="prompt-title">Grade my essay</div>
+      <div class="prompt-where">Claude</div>
+    </div>
   </div>
 </section>
 
