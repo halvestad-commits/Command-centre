@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Håvard — Command Centre</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f0f0f;
+    --surface: #171717;
+    --border: #2a2a2a;
+    --border-hover: #3d3d3d;
+    --text-primary: #f0ede8;
+    --text-secondary: #888;
+    --text-tertiary: #555;
+    --accent: #c8b89a;
+    --accent-dim: #1e1c18;
+    --green: #4a9e6a;
+    --green-dim: #0d1f14;
+    --blue: #4a7fc1;
+    --blue-dim: #0d1626;
+    --amber: #c49a3c;
+    --amber-dim: #1e1708;
+    --purple: #8b6fb5;
+    --purple-dim: #16101f;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text-primary);
+    min-height: 100vh;
+    padding: 48px 40px;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  .top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 40px;
+  }
+
+  .greeting {
+    font-size: 28px;
+    font-weight: 500;
+    letter-spacing: -0.5px;
+    color: var(--text-primary);
+  }
+
+  .date {
+    font-size: 13px;
+    color: var(--text-tertiary);
+    margin-top: 4px;
+    font-weight: 300;
+  }
+
+  .clock {
+    font-family: 'DM Mono', monospace;
+    font-size: 28px;
+    font-weight: 400;
+    color: var(--text-secondary);
+    letter-spacing: -1px;
+  }
+
+  .section-label {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    margin-bottom: 12px;
+  }
+
+  section { margin-bottom: 36px; }
+
+  /* TOOLS */
+  .tool-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
+
+  .tool-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 14px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: border-color .15s, background .15s, transform .1s;
+  }
+
+  .tool-btn:hover {
+    border-color: var(--border-hover);
+    background: #1e1e1e;
+    transform: translateY(-1px);
+  }
+
+  .tool-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+  }
+
+  .tool-name {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-primary);
+    display: block;
+  }
+
+  .tool-desc {
+    font-size: 11px;
+    color: var(--text-tertiary);
+    display: block;
+    margin-top: 1px;
+    font-weight: 300;
+  }
+
+  /* TASKS */
+  .task-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+  }
+
+  .task-input-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 14px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .task-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    font-size: 13px;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--text-primary);
+  }
+
+  .task-input::placeholder { color: var(--text-tertiary); }
+
+  .add-btn {
+    font-size: 12px;
+    padding: 5px 14px;
+    border-radius: 20px;
+    border: 1px solid var(--border-hover);
+    background: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: all .15s;
+  }
+
+  .add-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  .task-list { list-style: none; }
+
+  .task-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+    color: var(--text-secondary);
+  }
+
+  .task-item:last-child { border-bottom: none; }
+
+  .task-check {
+    width: 16px;
+    height: 16px;
+    border-radius: 4px;
+    border: 1px solid var(--border-hover);
+    cursor: pointer;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    transition: all .15s;
+    background: transparent;
+    color: transparent;
+  }
+
+  .task-check.done {
+    background: var(--green-dim);
+    border-color: var(--green);
+    color: var(--green);
+  }
+
+  .task-text { flex: 1; transition: all .15s; }
+  .task-text.done { text-decoration: line-through; color: var(--text-tertiary); }
+
+  .task-del {
+    font-size: 11px;
+    color: var(--text-tertiary);
+    cursor: pointer;
+    padding: 2px 6px;
+    border-radius: 4px;
+    transition: all .15s;
+  }
+
+  .task-del:hover { color: #c0604a; background: #1e0f0d; }
+
+  .empty-tasks {
+    font-size: 13px;
+    color: var(--text-tertiary);
+    padding: 4px 0;
+    font-weight: 300;
+  }
+
+  /* PROMPTS */
+  .prompt-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+
+  .prompt-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px;
+    cursor: pointer;
+    transition: border-color .15s, background .15s, transform .1s;
+  }
+
+  .prompt-card:hover {
+    border-color: var(--border-hover);
+    background: #1e1e1e;
+    transform: translateY(-1px);
+  }
+
+  .prompt-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+  }
+
+  .prompt-where {
+    font-size: 11px;
+    color: var(--text-tertiary);
+    font-weight: 300;
+  }
+
+  .prompt-arrow {
+    float: right;
+    color: var(--text-tertiary);
+    font-size: 12px;
+  }
+
+  /* MODAL */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.8);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border-hover);
+    border-radius: 12px;
+    padding: 24px;
+    max-width: 560px;
+    width: 90%;
+  }
+
+  .modal-title {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+  }
+
+  .modal-where {
+    font-size: 12px;
+    color: var(--text-tertiary);
+    margin-bottom: 16px;
+  }
+
+  .modal-prompt {
+    background: #0f0f0f;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px;
+    font-size: 12px;
+    font-family: 'DM Mono', monospace;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    white-space: pre-wrap;
+    margin-bottom: 16px;
+    max-height: 300px;
+    overflow-y: auto;
+  }
+
+  .modal-btns { display: flex; gap: 8px; justify-content: flex-end; }
+
+  .modal-copy {
+    font-size: 12px;
+    padding: 7px 16px;
+    border-radius: 20px;
+    border: 1px solid var(--accent);
+    background: transparent;
+    color: var(--accent);
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: all .15s;
+  }
+
+  .modal-copy:hover { background: var(--accent-dim); }
+
+  .modal-close {
+    font-size: 12px;
+    padding: 7px 16px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: all .15s;
+  }
+
+  .modal-close:hover { border-color: var(--border-hover); }
+
+  .copied-badge {
+    font-size: 11px;
+    color: var(--green);
+    display: none;
+    align-items: center;
+    margin-right: auto;
+  }
+
+  .divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin-bottom: 36px;
+  }
+
+  @media (max-width: 700px) {
+    body { padding: 24px 20px; }
+    .tool-grid { grid-template-columns: repeat(3, 1fr); }
+    .prompt-grid { grid-template-columns: repeat(2, 1fr); }
+    .top { flex-direction: column; gap: 8px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="top">
+  <div>
+    <div class="greeting" id="greet">Good morning, Håvard</div>
+    <div class="date" id="datestr"></div>
+  </div>
+  <div class="clock" id="clock">00:00</div>
+</div>
+
+<section>
+  <div class="section-label">Your tools</div>
+  <div class="tool-grid">
+    <a class="tool-btn" href="https://claude.ai/projects" target="_blank">
+      <div class="tool-icon" style="background:var(--purple-dim);font-size:18px">🤖</div>
+      <div>
+        <span class="tool-name">Claude</span>
+        <span class="tool-desc">Rewriter & planning</span>
+      </div>
+    </a>
+    <a class="tool-btn" href="https://notebooklm.google.com" target="_blank">
+      <div class="tool-icon" style="background:var(--green-dim);font-size:18px">📚</div>
+      <div>
+        <span class="tool-name">NotebookLM</span>
+        <span class="tool-desc">Reading papers</span>
+      </div>
+    </a>
+    <a class="tool-btn" href="https://perplexity.ai" target="_blank">
+      <div class="tool-icon" style="background:var(--blue-dim);font-size:18px">🔍</div>
+      <div>
+        <span class="tool-name">Perplexity</span>
+        <span class="tool-desc">Research & sources</span>
+      </div>
+    </a>
+    <a class="tool-btn" href="https://gamma.app" target="_blank">
+      <div class="tool-icon" style="background:var(--amber-dim);font-size:18px">🎤</div>
+      <div>
+        <span class="tool-name">Gamma</span>
+        <span class="tool-desc">Slide builder</span>
+      </div>
+    </a>
+    <a class="tool-btn" href="https://gemini.google.com" target="_blank">
+      <div class="tool-icon" style="background:var(--green-dim);font-size:18px">✨</div>
+      <div>
+        <span class="tool-name">Gemini</span>
+        <span class="tool-desc">Text cleaning</span>
+      </div>
+    </a>
+    <a class="tool-btn" href="https://classroom.google.com" target="_blank">
+      <div class="tool-icon" style="background:var(--green-dim);font-size:18px">🎓</div>
+      <div>
+        <span class="tool-name">Classroom</span>
+        <span class="tool-desc">Assignments</span>
+      </div>
+    </a>
+    <a class="tool-btn" href="https://mail.google.com" target="_blank">
+      <div class="tool-icon" style="background:#1e0f0d;font-size:18px">✉️</div>
+      <div>
+        <span class="tool-name">Gmail</span>
+        <span class="tool-desc">Email</span>
+      </div>
+    </a>
+    <a class="tool-btn" href="https://drive.google.com" target="_blank">
+      <div class="tool-icon" style="background:var(--amber-dim);font-size:18px">📁</div>
+      <div>
+        <span class="tool-name">Drive</span>
+        <span class="tool-desc">Files & docs</span>
+      </div>
+    </a>
+  </div>
+</section>
+
+<hr class="divider">
+
+<section>
+  <div class="section-label">Today's focus</div>
+  <div class="task-card">
+    <div class="task-input-row">
+      <input class="task-input" id="task-input" placeholder="Add a task..." onkeydown="if(event.key==='Enter')addTask()"/>
+      <button class="add-btn" onclick="addTask()">Add</button>
+    </div>
+    <ul class="task-list" id="task-list">
+      <li class="empty-tasks" id="empty-msg">No tasks yet — add one above</li>
+    </ul>
+  </div>
+</section>
+
+<hr class="divider">
+
+<section>
+  <div class="section-label">Quick prompts — click to copy</div>
+  <div class="prompt-grid">
+    <div class="prompt-card" onclick="openPrompt('Plan an essay', 'Claude', `I need to write an essay on [TOPIC]. The word count is [X] words. The assignment asks me to [paste the brief].\n\nBefore I start researching help me:\n1. Break the topic into 4-5 sub-questions I need to answer\n2. Suggest a clear argument or thesis I could take\n3. Give me a paragraph-by-paragraph structure\n4. Tell me exactly what kind of sources I should look for per section\n5. Flag the most contested or interesting angle I could take to stand out\n\nDo not write the essay. Just give me the blueprint.`)">
+      <span class="prompt-arrow">↗</span>
+      <div class="prompt-title">Plan an essay</div>
+      <div class="prompt-where">Claude</div>
+    </div>
+    <div class="prompt-card" onclick="openPrompt('Summarise a paper', 'NotebookLM', `I have uploaded a paper/article/chapter. Before I read it fully I need you to:\n\n1. Give me the core argument in 3 sentences\n2. List the 5 most important points or findings\n3. Tell me what evidence or examples it uses to support the main claim\n4. Flag anything that is contested, weak or worth questioning\n5. Tell me what I should actually read in full vs what I can skim\n\nAfter that I will ask you specific questions about sections I need to go deeper on.`)">
+      <span class="prompt-arrow">↗</span>
+      <div class="prompt-title">Summarise a paper</div>
+      <div class="prompt-where">NotebookLM</div>
+    </div>
+    <div class="prompt-card" onclick="openPrompt('Quiz me', 'Claude', `I am studying [TOPIC/SUBJECT] for an exam.\n\nHere are my notes: [paste notes]\n\nQuiz me using these rules:\n- Ask one question at a time\n- Wait for my answer before continuing\n- Tell me if I am right, partially right or wrong\n- If I am wrong explain why simply\n- After 10 questions give me a score and tell me which areas I need to review\n\nStart with the most important concepts first.`)">
+      <span class="prompt-arrow">↗</span>
+      <div class="prompt-title">Quiz me</div>
+      <div class="prompt-where">Claude</div>
+    </div>
+    <div class="prompt-card" onclick="openPrompt('Essay to slides', 'Claude + Gamma', `I need to turn this essay/report into a [X] minute presentation with approximately [X] slides.\n\nStrip it down to only what matters for a live audience:\n1. Give me a slide-by-slide outline with one headline per slide\n2. For each slide give me 2-3 bullet points maximum\n3. Tell me what to say out loud that is NOT on the slides\n4. Suggest one strong opening line that grabs attention\n5. Give me a memorable closing line\n\nHere is my essay/report: [paste it]`)">
+      <span class="prompt-arrow">↗</span>
+      <div class="prompt-title">Essay to slides</div>
+      <div class="prompt-where">Claude + Gamma</div>
+    </div>
+    <div class="prompt-card" onclick="openPrompt('Test my understanding', 'Claude', `I am going to explain [CONCEPT] to you as if you know nothing about it.\n\nTell me where my explanation is unclear, wrong or missing something important.\n\nHere is my explanation: [your explanation]`)">
+      <span class="prompt-arrow">↗</span>
+      <div class="prompt-title">Test my understanding</div>
+      <div class="prompt-where">Claude</div>
+    </div>
+    <div class="prompt-card" onclick="openPrompt('Rewrite in my voice', 'Claude Project', `Open your Claude Rewriter Project.\nStart a fresh chat inside the project.\nPaste the text you want rewritten.\n\nThe system prompt and Style DNA are already loaded — just paste your text and go.`)">
+      <span class="prompt-arrow">↗</span>
+      <div class="prompt-title">Rewrite in my voice</div>
+      <div class="prompt-where">Claude Project</div>
+    </div>
+    <div class="prompt-card" onclick="openPrompt('Compare papers', 'NotebookLM', `I have uploaded multiple papers on the same topic. Compare them:\n- Where do they agree?\n- Where do they contradict each other?\n- Which makes the strongest argument and why?\n- Which should I cite for [my specific argument]?`)">
+      <span class="prompt-arrow">↗</span>
+      <div class="prompt-title">Compare papers</div>
+      <div class="prompt-where">NotebookLM</div>
+    </div>
+    <div class="prompt-card" onclick="openPrompt('Find my argument', 'Claude', `Here are the key points from my research on [TOPIC]:\n[paste your notes]\n\nBased on this help me:\n1. Identify the strongest argument I can make\n2. Find any gaps or weaknesses in my evidence\n3. Suggest a counterargument I should address\n4. Give me a one sentence thesis statement`)">
+      <span class="prompt-arrow">↗</span>
+      <div class="prompt-title">Find my argument</div>
+      <div class="prompt-where">Claude</div>
+    </div>
+    <div class="prompt-card" onclick="openPrompt('Clean raw text', 'Gemini', `You are a text cleaning assistant. I am going to paste raw copied text. It contains my actual written responses alongside question prompts, dates, form headers, timestamps, and other formatting noise.\n\nExtract ONLY my written responses. Remove all questions, prompts, dates, timestamps, headers, and instructions. Do not rephrase, correct, or improve anything. Do not fix spelling or grammar. Output exactly my words, separated by a blank line.\n\nText below:`)">
+      <span class="prompt-arrow">↗</span>
+      <div class="prompt-title">Clean raw text</div>
+      <div class="prompt-where">Gemini</div>
+    </div>
+  </div>
+</section>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal" onclick="closeModal(event)">
+  <div class="modal">
+    <div class="modal-title" id="modal-title"></div>
+    <div class="modal-where" id="modal-where"></div>
+    <div class="modal-prompt" id="modal-prompt"></div>
+    <div class="modal-btns">
+      <span class="copied-badge" id="copied-badge">✓ Copied</span>
+      <button class="modal-close" onclick="document.getElementById('modal').classList.remove('open')">Close</button>
+      <button class="modal-copy" onclick="copyPrompt()">Copy prompt</button>
+    </div>
+  </div>
+</div>
+
+<script>
+function updateClock() {
+  const now = new Date();
+  const h = now.getHours();
+  const m = String(now.getMinutes()).padStart(2, '0');
+  document.getElementById('clock').textContent = h + ':' + m;
+  const greet = document.getElementById('greet');
+  const tod = h < 12 ? 'morning' : h < 17 ? 'afternoon' : 'evening';
+  greet.textContent = 'Good ' + tod + ', Håvard';
+  document.getElementById('datestr').textContent = now.toLocaleDateString('en-GB', {weekday:'long', day:'numeric', month:'long', year:'numeric'});
+}
+updateClock();
+setInterval(updateClock, 10000);
+
+let tasks = JSON.parse(localStorage.getItem('havard_tasks') || '[]');
+
+function saveTasks() { localStorage.setItem('havard_tasks', JSON.stringify(tasks)); }
+
+function addTask() {
+  const inp = document.getElementById('task-input');
+  const val = inp.value.trim();
+  if (!val) return;
+  tasks.push({text: val, done: false, id: Date.now()});
+  inp.value = '';
+  saveTasks();
+  renderTasks();
+}
+
+function toggleTask(id) {
+  const t = tasks.find(t => t.id === id);
+  if (t) t.done = !t.done;
+  saveTasks();
+  renderTasks();
+}
+
+function deleteTask(id) {
+  tasks = tasks.filter(t => t.id !== id);
+  saveTasks();
+  renderTasks();
+}
+
+function renderTasks() {
+  const list = document.getElementById('task-list');
+  const empty = document.getElementById('empty-msg');
+  if (!tasks.length) {
+    list.innerHTML = '<li class="empty-tasks" id="empty-msg">No tasks yet — add one above</li>';
+    return;
+  }
+  list.innerHTML = tasks.map(t => `
+    <li class="task-item">
+      <div class="task-check ${t.done?'done':''}" onclick="toggleTask(${t.id})">${t.done?'✓':''}</div>
+      <span class="task-text ${t.done?'done':''}">${t.text}</span>
+      <span class="task-del" onclick="deleteTask(${t.id})">remove</span>
+    </li>`).join('');
+}
+renderTasks();
+
+let currentPrompt = '';
+
+function openPrompt(title, where, prompt) {
+  document.getElementById('modal-title').textContent = title;
+  document.getElementById('modal-where').textContent = where;
+  document.getElementById('modal-prompt').textContent = prompt;
+  document.getElementById('copied-badge').style.display = 'none';
+  currentPrompt = prompt;
+  document.getElementById('modal').classList.add('open');
+}
+
+function closeModal(e) {
+  if (e.target === document.getElementById('modal')) {
+    document.getElementById('modal').classList.remove('open');
+  }
+}
+
+function copyPrompt() {
+  navigator.clipboard.writeText(currentPrompt).then(() => {
+    const badge = document.getElementById('copied-badge');
+    badge.style.display = 'flex';
+    setTimeout(() => badge.style.display = 'none', 2000);
+  });
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') document.getElementById('modal').classList.remove('open');
+});
+</script>
+</body>
+</html>
